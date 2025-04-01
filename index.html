@@ -18,7 +18,7 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
-            margin: 20px;
+            margin: 20px; /* Increased margin for spacing */
         }
         .button:hover {
             background-color: #45a049;
@@ -26,7 +26,7 @@
         .dice {
             font-size: 24px;
             font-weight: bold;
-            margin: 40px auto;
+            margin: 40px auto; /* Increased margin for more space */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +41,7 @@
         .result {
             font-size: 24px;
             margin-top: 30px;
-            display: none;
+            display: none; /* Hide score until the game ends */
         }
         .allocation-container {
             display: flex;
@@ -63,173 +63,83 @@
             font-size: 20px;
             font-weight: bold;
         }
-        .green {
-            background-color: green;
-            color: white;
-        }
-        .pink {
-            background-color: pink;
-            color: white;
-        }
     </style>
 </head>
 <body>
     <h1>Random Allocation Game</h1>
-    <p>You have $10 to allocate between two groups. Click "Roll the Die" to determine which group receives the money. After each game, earnings for each box will be displayed before starting the next game.</p>
-
-    <div class="dice" id="dice">Roll the Die</div>
-
+    <p>You have two boxes in front of you: one belongs to Syracuse Orange Men and one belongs to a random person from UConn Huskies Men. You roll a die 30 times and each die roll will tell you how to assign one 50 cent coin; each time you roll the die, you will put 50 cents in one of the two cups in front of you. After you finish today’s activities, we will deliver this cup of money to a person randomly selected from UConn Huskies Men and one randomly selected person from Syracuse Orange Men. You will not be informed about who will receive the money and the persons who receive the money will not know about you. Pick a color, "pink" or "orange" for UConn Huskies If the die shows this color, put the money in UConn's box by clicking it. If the other color shows up, you will put the money in Syracuse's box. Click "Roll the Die" to reveal a color, then choose where to allocate the money.</p>
+    
+    <!-- Dice Result (Initially transparent with "50¢") -->
+    <div class="dice" id="dice">50¢</div>
+    
+    <!-- Roll Die Button -->
     <button class="button" id="roll-die">Roll the Die</button>
-
+    
+    <!-- Allocation boxes container -->
     <div class="allocation-container">
-        <div id="Storrs" class="allocation-box">
-            <div class="box-title">UConn Storrs Campus</div>
+        <div id="huskies" class="allocation-box">
+            <div class="box-title">Syracuse Orange Men</div>
         </div>
-        <div id="Stamford" class="allocation-box">
-            <div class="box-title">UConn Stamford Campus</div>
+        <div id="self" class="allocation-box">
+            <div class="box-title">UConn Huskies Men</div>
         </div>
     </div>
-
+    
+    <!-- Game result display -->
     <div class="result" id="final-score"></div>
-    <p id="money-left">Money Left: $10.00</p>
-
+    <p id="money-left">Money Left: $15.00</p>
+    
     <script>
-        let games = 4;
-        let currentGame = 1;
-        let moneyLeft = 10.00;
-        let storrsTotal = 0.00;
-        let stamfordTotal = 0.00;
-        let rolls = [];
-        let rollCount = 0;
-        const maxRolls = 10;
+        let score = 0;
+        let trialsLeft = 30;
+        let moneyLeft = 15.00;
+        let dieRolled = false; // Track if the die has been rolled
 
-        const gameNames = [
-            { name: "UConn Storrs Campus vs. UConn Stamford Campus", boxes: ['Storrs', 'Stamford'] },
-            { name: "UConn vs. Syracuse New York Campus", boxes: ['UConn', 'Syracuse'] },
-            { name: "UConn vs. UConn Stamford Campus", boxes: ['UConn', 'Stamford'] },
-            { name: "Syracuse New York Campus vs. UConn Storrs Campus", boxes: ['Syracuse', 'Storrs'] }
-        ];
-
-        // Generate 5 Green and 5 Pink rolls randomly
-        function generateRolls() {
-            rolls = [];
-            let greenRolls = 5;
-            let pinkRolls = 5;
-
-            while (greenRolls > 0 || pinkRolls > 0) {
-                let roll = Math.random() < 0.5 && greenRolls > 0 ? 'Green' : 'Pink';
-                rolls.push(roll);
-
-                if (roll === 'Green') {
-                    greenRolls--;
-                } else {
-                    pinkRolls--;
-                }
-            }
-            // Shuffle rolls randomly
-            rolls.sort(() => Math.random() - 0.5);
-        }
-
-        // Start the game
-        function startGame() {
-            generateRolls();
-            rollCount = 0;
-            moneyLeft = 10.00;
-            storrsTotal = 0.00;
-            stamfordTotal = 0.00;
-            updateMoneyLeft();
-            document.getElementById('final-score').classList.add('hidden');
-            document.getElementById('roll-die').innerHTML = "Roll the Die";
-            document.getElementById('dice').innerHTML = "Roll the Die";
-            document.getElementById('roll-die').disabled = false;
-        }
-
-        // Roll the die
         function rollDie() {
-            if (rollCount < maxRolls) {
-                const roll = rolls[rollCount];
-                document.getElementById('dice').innerHTML = roll;
-
-                // Add the green or pink class based on the roll
-                if (roll === 'Green') {
-                    document.getElementById('dice').classList.add('green');
-                    document.getElementById('dice').classList.remove('pink');
-                } else {
-                    document.getElementById('dice').classList.add('pink');
-                    document.getElementById('dice').classList.remove('green');
-                }
-
-                rollCount++;
-
-                // Wait for user to allocate the money
-                document.getElementById('roll-die').disabled = true;
-            }
-
-            if (rollCount === maxRolls) {
-                showEarnings();
-            }
+            return Math.random() < 0.5 ? 'pink' : 'green';
         }
 
-        // Allocate money when user clicks the boxes
-        function allocateMoney(box) {
-            if (moneyLeft > 0) {
-                if (rolls[rollCount - 1] === 'Green' && box === gameNames[currentGame - 1].boxes[0]) {
-                    storrsTotal += 1.00;
-                } else if (rolls[rollCount - 1] === 'Pink' && box === gameNames[currentGame - 1].boxes[1]) {
-                    stamfordTotal += 1.00;
-                }
-                moneyLeft -= 1.00;
-
-                updateMoneyLeft();
-
-                // If all rolls are done, show earnings
-                if (rollCount === maxRolls) {
-                    showEarnings();
-                } else {
-                    rollDie(); // Continue the game
-                }
-            }
+        function updateGame() {
+            if (!dieRolled) return;
+            const dieResult = rollDie();
+            document.getElementById('dice').style.backgroundColor = dieResult;
+            document.getElementById('dice').style.color = "black";
+            document.getElementById('dice').innerHTML = "50¢";
+            document.getElementById('roll-die').disabled = true;
         }
 
-        // Update the money left display
-        function updateMoneyLeft() {
-            document.getElementById('money-left').innerHTML = `Money Left: $${moneyLeft.toFixed(2)}`;
-        }
-
-        // Show the earnings at the end of the game
-        function showEarnings() {
-            document.getElementById('final-score').innerHTML = `Game Over!<br>${gameNames[currentGame - 1].name}<br>Storrs: $${storrsTotal.toFixed(2)}<br>Stamford: $${stamfordTotal.toFixed(2)}`;
-            document.getElementById('final-score').classList.remove('hidden');
-            document.getElementById('roll-die').innerHTML = "Next Game";
-            document.getElementById('roll-die').disabled = false;
-        }
-
-        // Start next game
         document.getElementById('roll-die').addEventListener('click', function() {
-            if (rollCount === maxRolls) {
-                if (currentGame < games) {
-                    currentGame++;
-                    startGame();
-                    document.getElementById('roll-die').innerHTML = "Roll the Die";
-                } else {
-                    document.getElementById('final-score').innerHTML = "All Games Completed!";
-                    document.getElementById('final-score').classList.remove('hidden');
-                }
-            } else {
-                rollDie();
+            if (trialsLeft > 0 && !dieRolled) {
+                dieRolled = true;
+                updateGame();
             }
         });
 
-        // Add event listeners to the allocation boxes
-        document.getElementById('Storrs').addEventListener('click', function() {
-            allocateMoney('Storrs');
-        });
-        document.getElementById('Stamford').addEventListener('click', function() {
-            allocateMoney('Stamford');
-        });
+        function resetDie() {
+            document.getElementById('dice').style.backgroundColor = "transparent";
+            document.getElementById('dice').innerHTML = "50¢";
+            document.getElementById('roll-die').disabled = false;
+            dieRolled = false;
+        }
 
-        // Initialize the first game
-        startGame();
+        function allocateMoney() {
+            if (!dieRolled) return;
+            score++;
+            trialsLeft--;
+            moneyLeft -= 0.50;
+            document.getElementById('money-left').innerHTML = `Money Left: $${moneyLeft.toFixed(2)}`;
+            
+            if (trialsLeft <= 0) {
+                document.getElementById('final-score').innerHTML = `Game Over! Final Score: ${score}`;
+                document.getElementById('final-score').style.display = "block";
+                document.getElementById('roll-die').disabled = true;
+            } else {
+                resetDie();
+            }
+        }
+
+        document.getElementById('huskies').addEventListener('click', allocateMoney);
+        document.getElementById('self').addEventListener('click', allocateMoney);
     </script>
 </body>
 </html>
