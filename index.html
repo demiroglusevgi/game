@@ -38,11 +38,6 @@
             background-color: transparent;
             color: black;
         }
-        .result {
-            font-size: 24px;
-            margin-top: 30px;
-            display: none;
-        }
         .allocation-container {
             display: flex;
             justify-content: center;
@@ -127,7 +122,11 @@
             document.getElementById('stamford-earnings').innerHTML = `$${stamfordTotal.toFixed(2)}`;
             
             if (moneyLeft <= 0) {
-                document.body.innerHTML = '<h1>Game Over!</h1><p>Storrs: $' + storrsTotal.toFixed(2) + ', Stamford: $' + stamfordTotal.toFixed(2) + '</p><button class="button" onclick="startNextGame()">Next Game</button>';
+                document.body.innerHTML = `
+                    <h1>Game Over!</h1>
+                    <p>Storrs: $${storrsTotal.toFixed(2)}, Stamford: $${stamfordTotal.toFixed(2)}</p>
+                    <button class="button" onclick="startNextGame()">Next Game</button>
+                `;
             } else {
                 resetDie();
             }
@@ -145,7 +144,10 @@
                 moneyLeft = 10.00;
                 storrsTotal = 0.00;
                 stamfordTotal = 0.00;
-                document.body.innerHTML = '<h1>Next Game</h1><button class="button" onclick="initializeGame()">Start</button>';
+                document.body.innerHTML = `
+                    <h1>Next Game</h1>
+                    <button class="button" onclick="initializeGame()">Start</button>
+                `;
             } else {
                 document.body.innerHTML = '<h1>All games completed!</h1>';
             }
