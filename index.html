@@ -35,8 +35,13 @@
             border-radius: 50%;
             border: 2px solid black;
             text-align: center;
-            background-color: #f0f0f0;
+            background-color: transparent;
             color: black;
+        }
+        .result {
+            font-size: 24px;
+            margin-top: 30px;
+            display: none;
         }
         .allocation-container {
             display: flex;
@@ -58,19 +63,24 @@
             font-size: 20px;
             font-weight: bold;
         }
-        .hidden {
-            display: none;
+        .green {
+            background-color: green;
+            color: white;
+        }
+        .pink {
+            background-color: pink;
+            color: white;
         }
     </style>
 </head>
 <body>
     <h1>Random Allocation Game</h1>
     <p>You have $10 to allocate between two groups. Click "Roll the Die" to determine which group receives the money. After each game, earnings for each box will be displayed before starting the next game.</p>
-    
-    <div class="dice" id="dice">Roll</div>
-    
+
+    <div class="dice" id="dice">Roll the Die</div>
+
     <button class="button" id="roll-die">Roll the Die</button>
-    
+
     <div class="allocation-container">
         <div id="Storrs" class="allocation-box">
             <div class="box-title">UConn Storrs Campus</div>
@@ -79,10 +89,10 @@
             <div class="box-title">UConn Stamford Campus</div>
         </div>
     </div>
-    
+
     <div class="result" id="final-score"></div>
     <p id="money-left">Money Left: $10.00</p>
-    
+
     <script>
         let games = 4;
         let currentGame = 1;
@@ -92,6 +102,13 @@
         let rolls = [];
         let rollCount = 0;
         const maxRolls = 10;
+
+        const gameNames = [
+            { name: "UConn Storrs Campus vs. UConn Stamford Campus", boxes: ['Storrs', 'Stamford'] },
+            { name: "UConn vs. Syracuse New York Campus", boxes: ['UConn', 'Syracuse'] },
+            { name: "UConn vs. UConn Stamford Campus", boxes: ['UConn', 'Stamford'] },
+            { name: "Syracuse New York Campus vs. UConn Storrs Campus", boxes: ['Syracuse', 'Storrs'] }
+        ];
 
         // Generate 5 Green and 5 Pink rolls randomly
         function generateRolls() {
@@ -121,8 +138,10 @@
             storrsTotal = 0.00;
             stamfordTotal = 0.00;
             updateMoneyLeft();
-            document.getElementById('storrs-earnings').classList.add('hidden');
-            document.getElementById('stamford-earnings').classList.add('hidden');
+            document.getElementById('final-score').classList.add('hidden');
+            document.getElementById('roll-die').innerHTML = "Roll the Die";
+            document.getElementById('dice').innerHTML = "Roll the Die";
+            document.getElementById('roll-die').disabled = false;
         }
 
         // Roll the die
@@ -130,6 +149,16 @@
             if (rollCount < maxRolls) {
                 const roll = rolls[rollCount];
                 document.getElementById('dice').innerHTML = roll;
+
+                // Add the green or pink class based on the roll
+                if (roll === 'Green') {
+                    document.getElementById('dice').classList.add('green');
+                    document.getElementById('dice').classList.remove('pink');
+                } else {
+                    document.getElementById('dice').classList.add('pink');
+                    document.getElementById('dice').classList.remove('green');
+                }
+
                 rollCount++;
 
                 // Wait for user to allocate the money
@@ -144,9 +173,9 @@
         // Allocate money when user clicks the boxes
         function allocateMoney(box) {
             if (moneyLeft > 0) {
-                if (rolls[rollCount - 1] === 'Green') {
+                if (rolls[rollCount - 1] === 'Green' && box === gameNames[currentGame - 1].boxes[0]) {
                     storrsTotal += 1.00;
-                } else {
+                } else if (rolls[rollCount - 1] === 'Pink' && box === gameNames[currentGame - 1].boxes[1]) {
                     stamfordTotal += 1.00;
                 }
                 moneyLeft -= 1.00;
@@ -169,38 +198,37 @@
 
         // Show the earnings at the end of the game
         function showEarnings() {
-            document.getElementById('storrs-earnings').classList.remove('hidden');
-            document.getElementById('stamford-earnings').classList.remove('hidden');
-            document.getElementById('storrs-earnings').innerHTML = `UConn Storrs Campus: $${storrsTotal.toFixed(2)}`;
-            document.getElementById('stamford-earnings').innerHTML = `UConn Stamford Campus: $${stamfordTotal.toFixed(2)}`;
-            document.getElementById('roll-die').disabled = true;
-            document.body.innerHTML += '<button class="button" onclick="startNextGame()">Next Game</button>';
+            document.getElementById('final-score').innerHTML = `Game Over!<br>${gameNames[currentGame - 1].name}<br>Storrs: $${storrsTotal.toFixed(2)}<br>Stamford: $${stamfordTotal.toFixed(2)}`;
+            document.getElementById('final-score').classList.remove('hidden');
+            document.getElementById('roll-die').innerHTML = "Next Game";
+            document.getElementById('roll-die').disabled = false;
         }
 
-        // Start the next game
-        function startNextGame() {
-            if (currentGame < games) {
-                currentGame++;
-                startGame();
-                document.getElementById('roll-die').disabled = false;
-                document.getElementById('dice').innerHTML = "Roll";
+        // Start next game
+        document.getElementById('roll-die').addEventListener('click', function() {
+            if (rollCount === maxRolls) {
+                if (currentGame < games) {
+                    currentGame++;
+                    startGame();
+                    document.getElementById('roll-die').innerHTML = "Roll the Die";
+                } else {
+                    document.getElementById('final-score').innerHTML = "All Games Completed!";
+                    document.getElementById('final-score').classList.remove('hidden');
+                }
             } else {
-                document.body.innerHTML = '<h1>All games completed!</h1>';
+                rollDie();
             }
-        }
+        });
 
-        // Add event listeners for the allocation boxes
+        // Add event listeners to the allocation boxes
         document.getElementById('Storrs').addEventListener('click', function() {
             allocateMoney('Storrs');
         });
-
         document.getElementById('Stamford').addEventListener('click', function() {
             allocateMoney('Stamford');
         });
 
-        document.getElementById('roll-die').addEventListener('click', rollDie);
-
-        // Initialize the game
+        // Initialize the first game
         startGame();
     </script>
 </body>
