@@ -67,7 +67,7 @@
 </head>
 <body>
     <h1>Random Allocation Game</h1>
-    <p>You have two boxes in front of you: one belongs to Syracuse Orange Men and one belongs to a random person from UConn Huskies Men. You roll a die 30 times and each die roll will tell you how to assign one 50 cent coin; each time you roll the die, you will put 50 cents in one of the two cups in front of you. After you finish today’s activities, we will deliver this cup of money to a person randomly selected from UConn Huskies Men and one randomly selected person from Syracuse Orange Men. You will not be informed about who will receive the money and the persons who receive the money will not know about you. Pick a color, "pink" or "orange" for UConn Huskies If the die shows this color, put the money in UConn's box by clicking it. If the other color shows up, you will put the money in Syracuse's box. Click "Roll the Die" to reveal a color, then choose where to allocate the money.</p>
+    <p>You have two boxes in front of you: one is BOX 1 and one is BOX 2. You roll a die 30 times and each die roll will tell you how to assign one 50 cent coin; each time you roll the die, you will put 50 cents in one of the two cups in front of you. After you finish today’s activities, we will deliver this cup of money to a person randomly selected from each box. You will not be informed about who will receive the money and the persons who receive the money will not know about you. Pick a color, "yellow" or "orange" for yourself. If the die shows your color, put the money in your own box by clicking it. If the other color shows up, you will put the money in BOX 1. Click "Roll the Die" to reveal a color, then choose where to allocate the money.</p>
     
     <!-- Dice Result (Initially transparent with "50¢") -->
     <div class="dice" id="dice">50¢</div>
@@ -78,10 +78,12 @@
     <!-- Allocation boxes container -->
     <div class="allocation-container">
         <div id="huskies" class="allocation-box">
-            <div class="box-title">Syracuse Orange Men</div>
+            <div class="box-title">BOX 1</div>
+            <p>Click to allocate to BOX 1</p>
         </div>
         <div id="self" class="allocation-box">
-            <div class="box-title">UConn Huskies Men</div>
+            <div class="box-title">BOX 2</div>
+            <p>Click to keep for BOX 2</p>
         </div>
     </div>
     
@@ -141,5 +143,4 @@
         document.getElementById('huskies').addEventListener('click', allocateMoney);
         document.getElementById('self').addEventListener('click', allocateMoney);
     </script>
-</body>
-</html>
+</
