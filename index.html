@@ -96,6 +96,8 @@
         let trialsLeft = 30;
         let moneyLeft = 15.00;
         let dieRolled = false; // Track if the die has been rolled
+        let box1Amount = 0; // Amount for BOX 1
+        let box2Amount = 0; // Amount for BOX 2
 
         function rollDie() {
             return Math.random() < 0.5 ? 'pink' : 'green';
@@ -124,15 +126,27 @@
             dieRolled = false;
         }
 
-        function allocateMoney() {
+        function allocateMoney(isBox1) {
             if (!dieRolled) return;
+
+            // Allocate 50 cents to the appropriate box
+            if (isBox1) {
+                box1Amount += 0.50;
+            } else {
+                box2Amount += 0.50;
+            }
+
             score++;
             trialsLeft--;
             moneyLeft -= 0.50;
             document.getElementById('money-left').innerHTML = `Money Left: $${moneyLeft.toFixed(2)}`;
             
             if (trialsLeft <= 0) {
-                document.getElementById('final-score').innerHTML = `Game Over! Final Score: ${score}`;
+                document.getElementById('final-score').innerHTML = `
+                    Game Over! Final Score: ${score} <br>
+                    BOX 1 Amount: $${box1Amount.toFixed(2)} <br>
+                    BOX 2 Amount: $${box2Amount.toFixed(2)}
+                `;
                 document.getElementById('final-score').style.display = "block";
                 document.getElementById('roll-die').disabled = true;
             } else {
@@ -140,7 +154,14 @@
             }
         }
 
-        document.getElementById('huskies').addEventListener('click', allocateMoney);
-        document.getElementById('self').addEventListener('click', allocateMoney);
+        // Box click event listeners
+        document.getElementById('huskies').addEventListener('click', function() {
+            allocateMoney(true); // Allocate to BOX 1
+        });
+
+        document.getElementById('self').addEventListener('click', function() {
+            allocateMoney(false); // Allocate to BOX 2
+        });
     </script>
-</
+</body>
+</html>
