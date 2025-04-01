@@ -74,11 +74,9 @@
     <div class="allocation-container">
         <div id="Storrs" class="allocation-box">
             <div class="box-title">UConn Storrs Campus</div>
-            <p id="storrs-earnings" class="hidden">$0.00</p>
         </div>
         <div id="Stamford" class="allocation-box">
             <div class="box-title">UConn Stamford Campus</div>
-            <p id="stamford-earnings" class="hidden">$0.00</p>
         </div>
     </div>
     
@@ -134,13 +132,8 @@
                 document.getElementById('dice').innerHTML = roll;
                 rollCount++;
 
-                if (roll === 'Green') {
-                    storrsTotal += 1.00;
-                } else {
-                    stamfordTotal += 1.00;
-                }
-
-                updateMoneyLeft();
+                // Wait for user to allocate the money
+                document.getElementById('roll-die').disabled = true;
             }
 
             if (rollCount === maxRolls) {
@@ -148,7 +141,28 @@
             }
         }
 
-        // Update money left
+        // Allocate money when user clicks the boxes
+        function allocateMoney(box) {
+            if (moneyLeft > 0) {
+                if (rolls[rollCount - 1] === 'Green') {
+                    storrsTotal += 1.00;
+                } else {
+                    stamfordTotal += 1.00;
+                }
+                moneyLeft -= 1.00;
+
+                updateMoneyLeft();
+
+                // If all rolls are done, show earnings
+                if (rollCount === maxRolls) {
+                    showEarnings();
+                } else {
+                    rollDie(); // Continue the game
+                }
+            }
+        }
+
+        // Update the money left display
         function updateMoneyLeft() {
             document.getElementById('money-left').innerHTML = `Money Left: $${moneyLeft.toFixed(2)}`;
         }
@@ -174,6 +188,15 @@
                 document.body.innerHTML = '<h1>All games completed!</h1>';
             }
         }
+
+        // Add event listeners for the allocation boxes
+        document.getElementById('Storrs').addEventListener('click', function() {
+            allocateMoney('Storrs');
+        });
+
+        document.getElementById('Stamford').addEventListener('click', function() {
+            allocateMoney('Stamford');
+        });
 
         document.getElementById('roll-die').addEventListener('click', rollDie);
 
